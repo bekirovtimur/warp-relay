@@ -61,7 +61,9 @@ iptables -t nat -A POSTROUTING \
 iptables -A FORWARD -p udp -d ${DST_IP} --dport ${DST_PORT} -j ACCEPT -m comment --comment "${TAG}"
 iptables -A FORWARD -p udp -s ${DST_IP} --sport ${DST_PORT} -j ACCEPT -m comment --comment "${TAG}"
 
-sudo apt install -y iptables-persistent
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
+sudo DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent
 iptables-save > /etc/iptables/rules.v4
 ```
 
@@ -136,9 +138,29 @@ sudo ./wr.sh
 
 ### Простая установка (без интерактивного меню)
 
+**Вариант 1 — один UDP-порт (стандартный режим)**
+
 ```bash
 curl -fsSL https://raw.githubusercontent.com/bekirovtimur/warp-relay/main/simple.sh | sudo bash
 ```
+
+**Вариант 2 — несколько UDP-портов одновременно (мультипорт)**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/bekirovtimur/warp-relay/main/simple_multiport.sh | sudo bash
+```
+
+Скрипт автоматически настраивает проброс для следующих UDP-портов (например используются порты Cloudflare WARP):
+```
+500   854   859   864   878   880   890   891   894   903
+908   928   934   939   942   943   945   946   955   968
+987   988   1002  1010  1014  1018  1070  1074  1180  1387
+1701  1843  2371  2408  2506  3138  3476  3581  3854  4177
+4198  4233  4500  5279  5956  7103  7152  7156  7281  7559
+8319  8742  8854  8886
+```
+Если клиент подключается к Relay-серверу по порту X,
+то трафик будет перенаправлен на внешний сервер на тот же самый порт X.
 
 ---
 
@@ -207,7 +229,9 @@ iptables -A FORWARD -p udp -d ${DST_IP} --dport ${DST_PORT} -j ACCEPT -m comment
 iptables -A FORWARD -p udp -s ${DST_IP} --sport ${DST_PORT} -j ACCEPT -m comment --comment "WR_RULE"
 
 # Сохранить правила
-apt install -y iptables-persistent
+echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
+sudo DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent
 iptables-save > /etc/iptables/rules.v4
 ```
 
@@ -291,7 +315,8 @@ warp-relay/
 │   ├── logo.png              # Логотип проекта
 │   ├── warp-relay.png        # Схема работы
 │   └── warp-relay.drawio     # Исходник схемы
-├── simple.sh                 # Простой скрипт установки
+├── simple.sh                 # Простая установка (один UDP-порт)
+├── simple_multiport.sh       # Простая установка (несколько UDP-портов)
 ├── wr.sh                     # Интерактивный скрипт
 └── README.md                 # Документация
 ```
