@@ -338,9 +338,9 @@ warp-relay/
 
 ```bash
 # Проверить доступность ifconfig.me
-curl -s ifconfig.me
+curl -4s ifconfig.me
 # Если не работает, используйте альтернативу:
-curl -s icanhazip.com
+curl -4s icanhazip.com
 # Или укажите адрес вручную задав значение переменной SRC_IP:
 ```
 
