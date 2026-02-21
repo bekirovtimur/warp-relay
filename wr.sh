@@ -5,7 +5,7 @@ RULES_FILE="/etc/iptables/rules.v4"
 SYSCTL_FILE="/etc/sysctl.d/ipv4-forwarding.conf"
 
 detect_ips() {
-    SRC_IP=$(curl -s ifconfig.me)
+    SRC_IP=$(curl -4s ifconfig.me)
     DST_IP=$(getent ahostsv4 engage.cloudflareclient.com | awk '{print $1; exit}')
 }
 

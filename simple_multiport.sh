@@ -1,5 +1,5 @@
 export TAG="WR_RULE"
-export SRC_IP=$(curl -s ifconfig.me)
+export SRC_IP=$(curl -4s ifconfig.me)
 export DST_IP=$(getent ahostsv4 engage.cloudflareclient.com | awk '{print $1; exit}')
 
 echo "net.ipv4.ip_forward=1" > /etc/sysctl.d/ipv4-forwarding.conf
