@@ -61,10 +61,8 @@ iptables -t nat -A POSTROUTING \
 iptables -A FORWARD -p udp -d ${DST_IP} --dport ${DST_PORT} -j ACCEPT -m comment --comment "${TAG}"
 iptables -A FORWARD -p udp -s ${DST_IP} --sport ${DST_PORT} -j ACCEPT -m comment --comment "${TAG}"
 
-echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
-echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
-sudo DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent
-iptables-save > /etc/iptables/rules.v4
+sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent
+sudo netfilter-persistent save
 ```
 
 **Результат:** сотрудникам для подключения к корпоративному VPN достаточно указать внутренний адрес Relay-сервера `192.168.11.10:2288`. Весь трафик автоматически перенаправляется на внешний Wireguard-сервер `40.30.20.10:51820`, при этом сотрудники не имеют прямого доступа в Интернет.
@@ -109,7 +107,7 @@ iptables-save > /etc/iptables/rules.v4
 
 - `iptables` — для настройки правил NAT и forwarding
 - `curl` — для определения внешнего IP-адреса
-- `iptables-persistent` — для сохранения правил после перезагрузки
+- `netfilter-persistent` — для сохранения правил после перезагрузки
 - `getent` — для DNS-разрешения (обычно входит в базовую поставку)
 
 ### Сетевые требования
@@ -229,10 +227,8 @@ iptables -A FORWARD -p udp -d ${DST_IP} --dport ${DST_PORT} -j ACCEPT -m comment
 iptables -A FORWARD -p udp -s ${DST_IP} --sport ${DST_PORT} -j ACCEPT -m comment --comment "WR_RULE"
 
 # Сохранить правила
-echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
-echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
-sudo DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent
-iptables-save > /etc/iptables/rules.v4
+sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent
+sudo netfilter-persistent save
 ```
 
 ---
@@ -302,7 +298,7 @@ echo "net.ipv4.ip_forward=0" > /etc/sysctl.d/ipv4-forwarding.conf
 sysctl -w net.ipv4.ip_forward=0
 
 # Сохранить изменения
-iptables-save > /etc/iptables/rules.v4
+netfilter-persistent save
 ```
 
 ---
@@ -347,11 +343,11 @@ curl -4s icanhazip.com
 ### Проблема: Правила не сохраняются после перезагрузки
 
 ```bash
-# Проверить установку iptables-persistent
-dpkg -l | grep iptables-persistent
+# Проверить установку netfilter-persistent
+dpkg -l | grep netfilter-persistent
 
 # Пересохранить правила вручную
-sudo iptables-save > /etc/iptables/rules.v4
+sudo netfilter-persistent save
 ```
 
 ### Проблема: Нет соединения через relay

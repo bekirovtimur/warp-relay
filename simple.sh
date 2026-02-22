@@ -20,7 +20,5 @@ iptables -t nat -A POSTROUTING \
 iptables -A FORWARD -p udp -d ${DST_IP} --dport ${DST_PORT} -j ACCEPT -m comment --comment "${TAG}"
 iptables -A FORWARD -p udp -s ${DST_IP} --sport ${DST_PORT} -j ACCEPT -m comment --comment "${TAG}"
 
-echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
-echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
-sudo DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent
-iptables-save > /etc/iptables/rules.v4
+sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent
+sudo netfilter-persistent save

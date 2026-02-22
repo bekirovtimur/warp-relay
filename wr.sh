@@ -45,8 +45,8 @@ apply_rules() {
         -m comment --comment "${TAG}" \
         -j ACCEPT
 
-    apt install -y iptables-persistent >/dev/null 2>&1
-    iptables-save > ${RULES_FILE}
+    apt install -y netfilter-persistent >/dev/null 2>&1
+    netfilter-persistent save
 
     echo "[✓] Правила добавлены."
 }

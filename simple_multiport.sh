@@ -26,10 +26,7 @@ for ((i=0; i<${#PORTS[@]}; i+=CHUNK_SIZE)); do
     iptables -A FORWARD -p udp -s ${DST_IP} -m multiport --sports ${PORTS_GROUP} -j ACCEPT -m comment --comment "${TAG}"
 done
 
-echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
-echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
-sudo DEBIAN_FRONTEND=noninteractive apt install -y iptables-persistent
-
-iptables-save > /etc/iptables/rules.v4
+sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent
+sudo netfilter-persistent save
 
 echo "Все правила добавлены!"
