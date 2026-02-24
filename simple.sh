@@ -1,3 +1,10 @@
+#!/bin/bash
+
+# Установка зависимостей
+export DEBIAN_FRONTEND=noninteractive
+apt update -qq
+apt install -y -qq iptables curl netfilter-persistent
+
 export TAG="WR_RULE"
 export SRC_IP=$(curl -4s ifconfig.me)
 export DST_IP=$(getent ahostsv4 engage.cloudflareclient.com | awk '{print $1; exit}')
@@ -20,5 +27,4 @@ iptables -t nat -A POSTROUTING \
 iptables -A FORWARD -p udp -d ${DST_IP} --dport ${DST_PORT} -j ACCEPT -m comment --comment "${TAG}"
 iptables -A FORWARD -p udp -s ${DST_IP} --sport ${DST_PORT} -j ACCEPT -m comment --comment "${TAG}"
 
-sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent
-sudo netfilter-persistent save
+netfilter-persistent save

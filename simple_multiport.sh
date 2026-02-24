@@ -1,3 +1,10 @@
+#!/bin/bash
+
+# Установка зависимостей
+export DEBIAN_FRONTEND=noninteractive
+apt update -qq
+apt install -y -qq iptables curl netfilter-persistent
+
 export TAG="WR_RULE"
 export SRC_IP=$(curl -4s ifconfig.me)
 export DST_IP=$(getent ahostsv4 engage.cloudflareclient.com | awk '{print $1; exit}')
@@ -26,7 +33,6 @@ for ((i=0; i<${#PORTS[@]}; i+=CHUNK_SIZE)); do
     iptables -A FORWARD -p udp -s ${DST_IP} -m multiport --sports ${PORTS_GROUP} -j ACCEPT -m comment --comment "${TAG}"
 done
 
-sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent
-sudo netfilter-persistent save
+netfilter-persistent save
 
 echo "Все правила добавлены!"

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Установка зависимостей
+export DEBIAN_FRONTEND=noninteractive
+apt update -qq >/dev/null 2>&1
+apt install -y -qq iptables curl netfilter-persistent >/dev/null 2>&1
+
 TAG="WR_RULE"
 RULES_FILE="/etc/iptables/rules.v4"
 SYSCTL_FILE="/etc/sysctl.d/ipv4-forwarding.conf"
@@ -45,7 +50,6 @@ apply_rules() {
         -m comment --comment "${TAG}" \
         -j ACCEPT
 
-    apt install -y netfilter-persistent >/dev/null 2>&1
     netfilter-persistent save
 
     echo "[✓] Правила добавлены."
